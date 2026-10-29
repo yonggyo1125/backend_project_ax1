@@ -37,10 +37,6 @@ AsyncSessionLocal = async_sessionmaker(
     expire_on_commit=False, 
 )
 
-# 데이터베이스 테이블의 기준(베이스 클래스) 정의
-class Base(DeclarativeBase):
-    pass
-
 # FastAPI에 데이터베이스 세션 제공 함수 정의
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
