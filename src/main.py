@@ -7,7 +7,7 @@ from user.presentation.routers.v1.router import router as user_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 모델 임포트
-    import user.infrastructure.user_model
+    import user.infrastructure.models
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
