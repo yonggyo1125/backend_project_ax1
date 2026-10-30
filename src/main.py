@@ -19,15 +19,6 @@ async def lifespan(app: FastAPI):
     # 애플리케이션 종료시 커넥션 풀 정리
     await close_db()
 
-@app.exception_handler(Exception)
-async def error_handler(request: Request, exc: Exception):
-    status_code = exc.status_code if isinstance(exc, SharedException) else status.HTTP_500_INTERNAL_SERVER_ERROR 
-    message = str(exc)
-    return JSONResponse(status_code=status_code, content=APIResponse(
-        success=False,
-        message=message
-    ))
-
 app = FastAPI(
     title="쇼핑몰 API", 
     description="설명...",

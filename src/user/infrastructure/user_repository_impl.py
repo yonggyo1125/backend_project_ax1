@@ -16,3 +16,9 @@ class UserRepositoryImpl(UserRepository):
         user_model = result.scalar_or_none()
 
         return user_model.to_user()
+
+    def save(self, user: User, password: str) -> User | None:
+        user = UserModel(
+            email = user.email,
+            name = user.name,
+        )
