@@ -6,9 +6,10 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import DeclarativeBase
+from shared.core.logger import get_logger
 
 load_dotenv()
+logger = get_logger(__name__)
 
 # 데이터베이스 접속 정보
 DATABASE_URL = os.getenv(
@@ -48,4 +49,5 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 # 서버 종료 시 커넥현 풀을 안전하게 반환하느 함수
 async def close_db() -> None:
+    logger.info("데이터베이스 엔진 연결 풀을 종료합니다.")
     await engine.dispose()
