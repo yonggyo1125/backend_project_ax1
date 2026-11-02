@@ -9,3 +9,4 @@ class Base(DeclarativeBase):
 def init_models():
     """SQLAlchemy 모델 메타데이터 등록"""
     import user.infrastructure.models
+    import board.infrastructure.models
