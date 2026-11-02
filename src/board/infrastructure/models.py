@@ -20,6 +20,12 @@ class Board(Base):
 
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+
 class Post(Base):
     __tablename__ = "posts"
     
@@ -61,3 +67,10 @@ class Post(Base):
 
     # 게시판 설정(N:1)
     board_config: Mapped["Board"] = relationship()
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content 
+        }
