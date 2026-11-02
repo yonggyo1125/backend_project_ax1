@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from board.infrastructure.models import Board, Post
 from shared.core.database import get_db
@@ -55,6 +56,26 @@ async def test3(session: AsyncSession = Depends(get_db)):
 
 @router.get("/4")
 async def test4(session: AsyncSession = Depends(get_db)):
-    stmt = select(Post)
+    # stmt = select(Post).where(Post.board_id == 'qna')
+    stmt = (
+            select(Post)
+            .options(joinedload(Post.board_config))
+            .where(Post.board_id == 'qna')
+    )
     items = await session.scalars(stmt)
-    
+
+    return [(i.to_dict(), i.board_config.to_dict()) for i in items]
+
+@router.get("/5")
+async def test5(session: AsyncSession = Depends(get_db)):
+    stmt = (
+            select(Board)
+            .options(selectinload(Board.posts))
+            .where(Board.id == 'qna')
+        )
+
+    board = await session.scalar(stmt)
+    logger.info(f"board: {board.to_dict()}")
+
+    return [post.to_dict() for post in board.posts]
+

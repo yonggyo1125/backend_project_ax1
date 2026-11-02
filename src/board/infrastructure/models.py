@@ -20,6 +20,18 @@ class Board(Base):
 
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
+    """
+    lazy: raise 기본값, 가져오지 않음
+           selectin : 1: N -> 1차 쿼리 ->  in 조건으로 2차 쿼리 수행 
+           joined : N:1 -> 처음부터 LEF JOIN 
+    """
+    posts: Mapped[list["Post"]] = relationship(
+        back_populates="board_config",
+        lazy="selectin",
+        cascade="all, delete-orphan"
+    )
+
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -66,7 +78,10 @@ class Post(Base):
     )
 
     # 게시판 설정(N:1)
-    board_config: Mapped["Board"] = relationship()
+    board_config: Mapped["Board"] = relationship(
+        back_populates="posts",
+        lazy="joined"
+    )
 
     def to_dict(self):
         return {
