@@ -20,7 +20,7 @@ class Board(Base):
 
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-class Post:
+class Post(Base):
     __tablename__ = "posts"
     
     id: Mapped[int] = mapped_column(

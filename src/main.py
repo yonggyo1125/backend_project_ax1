@@ -8,6 +8,7 @@ from shared.core.logger import get_logger
 from shared.core.models import Base
 from user.presentation.routers.v1.router import router as user_router
 from auth.presentation.routers.v1.router import router as auth_router
+from board.presentation.test_router import router as test_router
 
 logger = get_logger("app.main")
 
@@ -43,3 +44,5 @@ wire_dependencies(app)
 # 라우터 등록
 app.include_router(user_router)
 app.include_router(auth_router)
+
+app.include_router(test_router)
