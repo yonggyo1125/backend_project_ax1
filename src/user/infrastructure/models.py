@@ -2,11 +2,11 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Boolean, DateTime, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
-from shared.core.models import Base
+from shared.core.models import Base, DateTimeBase
 from user.domain.user import User
 
 
-class UserModel(Base):
+class UserModel(Base, DateTimeBase):
     __tablename__ = "users"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -17,16 +17,6 @@ class UserModel(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), default="USER", nullable=False)
     resign: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=datetime.now(timezone.utc), nullable=False
-    )
-    modified_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), default=None, onupdate=datetime.now(timezone.utc), nullable=True
-    )
-    deleted_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), default=None, nullable=True
-    )
 
     def to_user(self) -> User:
         """ORM Model -> Domain Entity 변환"""
