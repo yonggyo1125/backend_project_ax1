@@ -1,33 +1,30 @@
 from datetime import datetime, timezone
+from uuid import UUID
 
 from auth.domain.entities import TokenPayload
 from auth.domain.repository import TokenBlacklistRepository
-from auth.domain.service import TokenProvider
+from auth.domain.service import TokenProvider, UserCredentialVerifier
 from shared.core.exceptions import UnauthorizedException
-from user.domain.repository import UserRepository
-from user.domain.service import PasswordHasher
 
 
 class AuthService:
     def __init__(
         self,
-        user_repository: UserRepository,
+        credential_verifier: UserCredentialVerifier,
         token_blacklist_repo: TokenBlacklistRepository,
         token_provider: TokenProvider,
-        password_hasher: PasswordHasher,
     ):
-        self._user_repo = user_repository
+        self._credential_verifier = credential_verifier
         self._blacklist_repo = token_blacklist_repo
         self._token_provider = token_provider
-        self._password_hasher = password_hasher
 
     async def login(self, email: str, plain_password: str) -> tuple[str, str, int]:
         """(access_token, token_type, expires_in) 반환"""
-        user = await self._user_repo.find_by_email(email)
-        if not user or not self._password_hasher.verify(plain_password, user.password_hash):
+        user_id = await self._credential_verifier.verify_credentials(email, plain_password)
+        if not user_id:
             raise UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다.")
 
-        token, _, _, expires_in = self._token_provider.create_access_token(user.id)
+        token, _, _, expires_in = self._token_provider.create_access_token(user_id)
         return token, "bearer", expires_in
 
     async def logout(self, token: str) -> None:
