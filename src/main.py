@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from container import wire_dependencies
+from wiring import wire_dependencies
 from shared.core.database import close_db, engine
 from shared.core.exception_handlers import register_exception_handlers
 from shared.core.models import init_models
