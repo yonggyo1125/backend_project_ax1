@@ -29,12 +29,32 @@ class SqlAlchemyCommentRepository(CommentRepository):
             )
             .order_by(CommentModel.comment_id.asc())
         )
-        models = await self.session.scalars(stmt)
+        models = (await self.session.scalars(stmt)).all()
+        return [CommentMapper.to_domain(model) for model in models]
 
     async def count_by_post_id(self, post_id: int) -> int:
         """특정 게시글에 달린 유효 댓글 총 개수 카운트"""
-        pass
+        stmt = select(func.count(CommentModel.comment_id)).where(
+            CommentModel.post_id == post_id,
+            CommentModel.deleted_at.is_(None),
+        )
+
+        count = await self.session.scalar(stmt)
+        return count or 0
 
     async def save(self, comment: Comment) -> Comment:
         """댓글 등록 및 수정"""
-        pass
+        if comment.comment_id:
+            _comment = await self.session.get(CommentModel, comment.comment_id)
+            if _comment: # 댓글 수정
+                _comment.content = comment.content
+                _comment.deleted_at = comment.deleted_at
+                await self.session.commit()
+                await self.session.refresh(_comment)
+                return CommentMapper.to_domain(_comment)
+            
+        new_model = CommentMapper.to_model(comment)
+        self.session.add(new_model)
+        await self.session.commit()
+        await self.session.refresh(new_model)
+        return CommentMapper.to_domain(new_model)
