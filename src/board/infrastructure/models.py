@@ -1,5 +1,5 @@
 from datetime import datetime,timezone
-from sqlalchemy import String, Text, BigInteger, Integer, DateTime, Boolean, ForeignKey
+from sqlalchemy import String, Text, BigInteger, Integer, DateTime, Boolean, ForeignKey, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from shared.core.models import Base
 
@@ -37,6 +37,25 @@ class Board(Base):
             "id": self.id,
             "name": self.name
         }
+
+# 다대다 관계를 위한 중간 테이블
+post_tag_association = Table(
+    "posts_tags",
+    Base.metadata,
+    Column(
+        "post_id",
+        BigInteger,
+        ForeignKey("posts.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "tag_id",
+        String(60),
+        ForeignKey("tags.id", ondelete="CASCADE"),
+        primary_key=True
+    )
+)
+
 
 class Post(Base):
     __tablename__ = "posts"
