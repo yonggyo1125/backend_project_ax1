@@ -13,7 +13,7 @@ class SqlAlchemyTokenBlacklistRepository(TokenBlacklistRepository):
         """블랙리스트에 토큰 식별자 등록"""
         blacklist_item = TokenBlacklistModel(jti=jti, expired_at=expired_at)
         self.session.add(blacklist_item)
-        await self.session.commit()
+        await self.session.flush()
 
     async def is_blacklisted(self, jti: str) -> bool:
         """토큰이 블랙리스트에 등록되어 있는지 확인"""
@@ -25,7 +25,7 @@ class SqlAlchemyTokenBlacklistRepository(TokenBlacklistRepository):
         """유효기간이 지난 블랙리스트 항목 정리"""
         stmt= delete(TokenBlacklistModel).where(TokenBlacklistModel.expired_at <= current_time)
         result = await self.session.execute(stmt)
-        await self.session.commit()
+        await self.session.flush()
         return result.rowcount
         
      

@@ -49,13 +49,13 @@ class SqlAlchemyCommentRepository(CommentRepository):
             if _comment: # 댓글 수정
                 _comment.content = comment.content
                 _comment.deleted_at = comment.deleted_at
-                await self.session.commit()
+                await self.session.flush()
                 await self.session.refresh(_comment)
                 return CommentMapper.to_domain(_comment)
         
         # 댓글 추가
         new_model = CommentMapper.to_model(comment)
         self.session.add(new_model)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(new_model)
         return CommentMapper.to_domain(new_model)
