@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from domain.post import Post
-
+from board.domain.post import Post
+from board.domain.enums import PostSearchType
 
 class PostRepository(ABC):
 
@@ -15,12 +15,19 @@ class PostRepository(ABC):
         board_id: str,
         limit: int,
         offset: int,
+        search_type: PostSearchType | str | None = None,
+        keyword: str | None = None,
     ) -> list[Post]:
         """특정 게시판의 게시글 목록을 최신순으로 페이징 조회"""
         pass
 
     @abstractmethod
-    async def count_by_board_id(self, board_id: str) -> int:
+    async def count_by_board_id(
+        self, 
+        board_id: str,
+        search_type: PostSearchType | str | None = None,
+        keyword: str | None = None,
+    ) -> int:
         """특정 게시판의 전체 유효 게시글 수 카운트 (페이지네이션 계산용)"""
         pass
 
