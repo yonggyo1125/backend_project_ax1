@@ -52,7 +52,8 @@ class SqlAlchemyCommentRepository(CommentRepository):
                 await self.session.commit()
                 await self.session.refresh(_comment)
                 return CommentMapper.to_domain(_comment)
-            
+        
+        # 댓글 추가
         new_model = CommentMapper.to_model(comment)
         self.session.add(new_model)
         await self.session.commit()
