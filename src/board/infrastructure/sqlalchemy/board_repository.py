@@ -54,14 +54,14 @@ class SqlAlchemyBoardRepository(BoardRepository):
             _board.comment_edit_role = board.authority.comment_edit_role.value
             _board.deleted_at = board.deleted_at
             
-            await self.session.commit()
+            await self.session.flush()
             await self.session.refresh(_board)
             return BoardMapper.to_domain(_board)
         else: # 게시글 등록
             new_model = BoardMapper.to_model(board)
             self.session.add(new_model)
 
-            await self.session.commit()
+            await self.session.flush()
             await self.session.refresh(new_model)
             return BoardMapper.to_domain(new_model)
         

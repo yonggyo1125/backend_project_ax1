@@ -43,6 +43,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         try:
             yield session
+            session.commit()
         except Exception:
             await session.rollback() # 오류 발생하면 작업 모두 취소
             raise

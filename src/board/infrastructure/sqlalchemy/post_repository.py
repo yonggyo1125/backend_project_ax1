@@ -126,12 +126,12 @@ class SqlAlchemyPostRepository(PostRepository):
                 _post.title = post.title
                 _post.content = post.content
                 _post.deleted_at = post.deleted_at
-                await self.session.commit()
+                await self.session.flush()
                 await self.session.refresh(_post)
                 return PostMapper.to_domain(_post)
 
         new_model = PostMapper.to_model(post)
         self.session.add(new_model)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(new_model)
         return PostMapper.to_domain(new_model)

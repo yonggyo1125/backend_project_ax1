@@ -30,7 +30,7 @@ class SqlAlchemyUserRepository(UserRepository):
                 resign=user.resign
             )
             self.session.add(user_model)
-            await self.session.commit()
+            await self.session.flush()
             await self.session.refresh(user_model)
             return user_model.to_user()
 
@@ -45,7 +45,7 @@ class SqlAlchemyUserRepository(UserRepository):
             user_model.deleted_at = user.deleted_at
             user_model.modified_at = user.modified_at
 
-            await self.session.commit()
+            await self.session.flush()
             await self.session.refresh(user_model)
             return user_model.to_user()
 
