@@ -21,4 +21,5 @@ class DateTimeBase:
 # 모델 초기화
 def init_models():
     """SQLAlchemy 모델 메타데이터 등록"""
-    import user.infrastructure.models
+    import user.infrastructure.models # 회원
+    import board.infrastructure.sqlalchemy.models # 게시판
