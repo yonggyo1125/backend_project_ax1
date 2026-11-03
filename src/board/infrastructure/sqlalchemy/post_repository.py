@@ -114,7 +114,7 @@ class SqlAlchemyPostRepository(PostRepository):
         if search_condition is not None:
             stmt = stmt.where(search_condition)
 
-        count = await self._session.scalar(stmt)
+        count = await self.session.scalar(stmt)
         return count or 0
 
     @abstractmethod
@@ -126,12 +126,12 @@ class SqlAlchemyPostRepository(PostRepository):
                 _post.title = post.title
                 _post.content = post.content
                 _post.deleted_at = post.deleted_at
-                await self._session.flush()
-                await self._session.refresh(_post)
+                await self.session.commit()
+                await self.session.refresh(_post)
                 return PostMapper.to_domain(_post)
 
         new_model = PostMapper.to_model(post)
-        self._session.add(new_model)
-        await self._session.commit()
-        await self._session.refresh(new_model)
+        self.session.add(new_model)
+        await self.session.commit()
+        await self.session.refresh(new_model)
         return PostMapper.to_domain(new_model)
