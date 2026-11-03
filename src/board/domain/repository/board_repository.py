@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.board import Board
+from board.domain.board import Board
 
 
 class BoardRepository(ABC):

@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 
 from shared.core.exceptions import BadRequestException, ValidationException
 from board.domain.service import PasswordHasher
+from board.domain.enums import Role
 
 """
 1. 게시판은 무한대로 생성 가능하다. 게시판 설정 하나가 게시판 하나가 된다.
@@ -204,6 +205,23 @@ class Post:
             raise BadRequestException("이미 삭제된 게시글입니다.")
         self.deleted_at = datetime.now(timezone.utc)
 
+    def can_modify_or_delete(
+        self,
+        requester_id: uuid.UUID | None,
+        user_role: Role,
+        raw_guest_password: str | None,
+        hasher: PasswordHasher,
+    ) -> bool:
+        """수정/삭제 권한 확인 (관리자 -> 회원 본인 -> 비회원 비밀번호 일치 순)"""
+        if user_role == Role.ADMIN:
+            return True
+
+        if not self.author.is_guest:
+            return self.author.is_owner(requester_id)
+
+        if not raw_guest_password:
+            return False
+        return self.verify_guest_password(raw_guest_password, hasher)
 
 @dataclass
 class Comment:
