@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.post import Comment
+from board.domain.post import Comment
 
 
 class CommentRepository(ABC):
