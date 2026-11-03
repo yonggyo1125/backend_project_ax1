@@ -51,4 +51,72 @@ class PostMapper:
             else None
         )
 
-        author_id
+        return Post(
+            post_id=model.post_id,
+            board_id=model.board_id,
+            title=model.title,
+            content=model.content,
+            author=Author(author_name=model.author_name, author_id=model.author_id),
+            guest_password=guest_pw,
+            created_at=model.created_at,
+            modified_at=model.modified_at,
+            deleted_at=model.deleted_at,
+        )
+
+    @staticmethod
+    def to_model(domain: Post) -> PostModel:
+        return PostModel(
+            post_id=domain.post_id,
+            board_id=domain.board_info.board_id,
+            title=domain.title,
+            content=domain.content,
+            author_name=domain.author.author_name,
+            author_id=domain.author.author_name,
+            guest_password=guest_password(
+                domain.guest_password.hashed_value 
+                if domain.guest_password
+                else None
+            ),
+            created_at=domain.created_at,
+            modified_at=domain.modified_at,
+            deleted_at=domain.deleted_at,
+        )
+
+class CommentMapper:
+    """Comment 도메인 엔티티 <-> CommentModel 상호 변환기"""
+
+    @staticmethod
+    def to_domain(model: CommentModel) -> Comment:
+
+        return Comment(
+            comment_id=model.comment_id,
+            post_id=model.post_id,
+            content=model.content,
+            author=Author(author_name=model.author.author_name, author_id=domain.author.author_id),
+            guest_password=(
+                GuestPassword.from_hash(model.guest_password)
+                if model.guest_password
+                else None
+            ),
+            created_at=domain.created_at,
+            modified_at=domain.modified_at,
+            deleted_at=domain.deleted_at,
+        )
+
+    @staticmethod
+    def to_model(domain: Comment) -> CommentModel:
+        return CommentModel(
+            comment_id=domain.comment_id,
+            post_id=domain.post_id,
+            content=domain.content,
+            author_name=domain.author.author_name,
+            author_id=domain.author.author_id,
+            guest_password=(
+                domain.guest_password.hashed_value
+                if domain.guest_password
+                else None
+            ),
+            created_at=domain.created_at,
+            modified_at=domain.modified_at,
+            deleted_at=domain.deleted_at,
+        )
