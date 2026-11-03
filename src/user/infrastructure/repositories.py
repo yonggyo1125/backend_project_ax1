@@ -38,7 +38,7 @@ class SqlAlchemyUserRepository(UserRepository):
         stmt = select(UserModel).where(UserModel.id == user.id)
         user_model = await self.session.scalar(stmt)
 
-        if user_model:
+        if user_model:   
             user_model.name = user.name
             user_model.password_hash = user.password_hash
             user_model.resign = user.resign
