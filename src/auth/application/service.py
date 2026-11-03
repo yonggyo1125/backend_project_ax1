@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from uuid import UUID
 
 from auth.domain.entities import TokenPayload
 from auth.domain.repository import TokenBlacklistRepository
