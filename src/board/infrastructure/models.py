@@ -1,5 +1,5 @@
 from datetime import datetime,timezone
-from sqlalchemy import String, Text, BigInteger, Integer, DateTime, Boolean, ForeignKey, Table
+from sqlalchemy import String, Text, BigInteger, Integer, DateTime, Boolean, ForeignKey, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from shared.core.models import Base
 
@@ -50,7 +50,7 @@ post_tag_association = Table(
     ),
     Column(
         "tag_id",
-        String(60),
+        BigInteger,
         ForeignKey("tags.id", ondelete="CASCADE"),
         primary_key=True
     )
@@ -102,9 +102,27 @@ class Post(Base):
         lazy="joined"
     )
 
+    tags: Mapped[list["Tag"]] = relationship(
+        secondary=post_tag_association,
+        back_populates="posts",
+        lazy="selectin"
+    )
+
     def to_dict(self):
         return {
             "id": self.id,
             "title": self.title,
             "content": self.content 
         }
+
+class Tag(Base):
+    __tablename__ = "tags"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(60), unique=True, nullable=True, index=True)
+
+    posts: Mapped[list["Post"]] = relationship(
+        secondary=post_tag_association,
+        back_populates="tags",
+        lazy="selectin"
+    )
