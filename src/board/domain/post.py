@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
@@ -31,7 +32,7 @@ class BoardInfo:
 class Author:
     """작성자 정보 값 객체"""
     author_name: str
-    author_id: str | None = None  # None이면 비회원
+    author_id: uuid.UUID | None = None  # None이면 비회원
 
     def __post_init__(self):
         field_errors: dict[str, list[str]] = {}
@@ -53,7 +54,7 @@ class Author:
         return self.author_id is None
 
     @classmethod
-    def member(cls, user_id: str, username: str) -> "Author":
+    def member(cls, user_id: uuid.UUID, username: str) -> "Author":
         """회원 작성자 생성"""
         return cls(author_id=user_id, author_name=username.strip())
 
@@ -62,7 +63,7 @@ class Author:
         """비회원 작성자 생성"""
         return cls(author_id=None, author_name=guest_name.strip())
 
-    def is_owner(self, user_id: str | None) -> bool:
+    def is_owner(self, user_id: uuid.UUID | None) -> bool:
         """로그인 사용자가 작성자 본인인지 검증 (비회원은 False)"""
         if self.is_guest or user_id is None:
             return False
