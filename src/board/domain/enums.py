@@ -20,3 +20,12 @@ class Role(StrEnum):
         if isinstance(required_role, str):
             required_role = Role(required_role)
         return self.level >= required_role.level
+
+# 게시글 검색 타입
+class PostSearchType(StrEnum):
+    ALL = "ALL"
+    TITLE = "TITLE"
+    CONTENT = "CONTENT"
+    TITLE_CONTENT = "TITLE_CONTENT"
+    AUTHOR_NAME = "AUTHOR_NAME"
+    AUTHOR_EMAIL = "AUTHOR_EMAIL"
