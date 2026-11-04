@@ -3,9 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from shared.core.schemas import APIResponse
+from user.domain.user import User
 from user.application.service import UserService
-from user.presentation.dependencies import provide_user_service
+from user.presentation.dependencies import provide_user_service, get_current_user
 from user.presentation.schemas import ChangePasswordRequest, SignUpUserRequest, UserResponse
+from shared.core.logger import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/v1/users", tags=["Users"])
 
@@ -49,3 +53,8 @@ async def change_password(
         new_password=request.new_password,
     )
     return APIResponse.ok(message="비밀번호가 성공적으로 변경되었습니다.")
+
+
+@router.get("/me")
+async def get_logged_user(user: User = Depends(get_current_user)):
+    logger.info(f"user: {user}")
