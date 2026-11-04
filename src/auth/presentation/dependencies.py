@@ -8,7 +8,5 @@ from user.domain.repository import UserRepository
 from user.domain.user import User
 from user.presentation.dependencies import provide_user_repository
 
-security = HTTPBearer(auto_error=True)
-
 def provide_auth_service() -> AuthService:
     raise NotImplementedError("AuthService 의존성이 주입되지 않았습니다.")
