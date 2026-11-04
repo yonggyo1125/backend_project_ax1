@@ -6,6 +6,7 @@ from datetime import datetime, timezone, timedelta
 
 from auth.domain.entities import TokenPayload
 from auth.domain.service import TokenProvider
+from shared.core.exceptions import UnauthorizedException
 
 class JwtTokenProvider(TokenProvider):
     def __init__(
@@ -41,4 +42,16 @@ class JwtTokenProvider(TokenProvider):
 
     def decode_token(self, token: str) -> TokenPayload:
         """토큰 검증 및 페이로드 추출"""
+        try: 
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+
+            return TokenPayload(
+                user_id=uuid.UUID(payload['sub']),
+                jti=payload['jti'],
+                exp=datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+            )
+        except (jwt.PyJWTError, KeyError, ValueError):
+            raise UnauthorizedException("유효하지 않거나 만료된 토큰입니다.")
+
+
         pass
