@@ -30,7 +30,7 @@ class BoardMapper:
             board_id=domain.board_id,
             board_name=domain.board_name,
             page_size=domain.page_size,
-            edit_role=domain.authority.edit_role_value,
+            edit_role=domain.authority.edit_role.value,
             view_role=domain.authority.view_role.value,
             list_role=domain.authority.list_role.value,
             comment_list_role=domain.authority.comment_list_role.value,

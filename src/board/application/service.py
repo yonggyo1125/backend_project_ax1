@@ -1,4 +1,5 @@
 import uuid
+
 from board.domain.board import Authority, Board
 from board.domain.enums import PostSearchType, Role
 from board.domain.post import Author, Comment, Post
@@ -12,8 +13,10 @@ from shared.core.exceptions import (
     NotFoundException,
 )
 
+
 class BoardService:
     """게시판 설정 서비스"""
+
     def __init__(self, board_repo: BoardRepository):
         self._board_repo = board_repo
 
@@ -63,6 +66,7 @@ class BoardService:
 
 class PostService:
     """게시글 서비스"""
+
     def __init__(
         self,
         post_repo: PostRepository,
@@ -80,13 +84,12 @@ class PostService:
         content: str,
         author: Author,
         raw_guest_password: str | None = None,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,  # 비회원은 None
     ) -> Post:
         board = await self._get_active_board(board_id)
         if not board.authority.can_edit(user_role):
             raise ForbiddenException("해당 게시판에 글을 작성할 권한이 없습니다.")
 
-        # 비밀번호 유효성 및 해싱, GuestPassword 생성은 Post.create 내부 도메인 팩토리에서 처리
         post = Post.create(
             board_id=board.board_id,
             board_name=board.board_name,
@@ -101,7 +104,7 @@ class PostService:
     async def get_post_detail(
         self,
         post_id: int,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,
     ) -> Post:
         post = await self._get_active_post(post_id)
         board = await self._get_active_board(post.board_info.board_id)
@@ -114,7 +117,7 @@ class PostService:
     async def list_posts(
         self,
         board_id: str,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,
         page: int = 1,
         page_size: int | None = None,
         search_type: PostSearchType | str | None = None,
@@ -148,7 +151,7 @@ class PostService:
         content: str,
         requester_id: uuid.UUID | None = None,
         guest_password: str | None = None,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,
     ) -> Post:
         post = await self._get_active_post(post_id)
         board = await self._get_active_board(post.board_info.board_id)
@@ -167,7 +170,7 @@ class PostService:
         post_id: int,
         requester_id: uuid.UUID | None = None,
         guest_password: str | None = None,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,
     ) -> None:
         post = await self._get_active_post(post_id)
         board = await self._get_active_board(post.board_info.board_id)
@@ -215,14 +218,8 @@ class CommentService:
         content: str,
         author: Author,
         raw_guest_password: str | None = None,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,
     ) -> Comment:
-        """
-        신규 댓글 등록
-        - 게시글 및 게시판 활성 상태 확인
-        - comment_edit_role 권한 검증
-        - 비회원 비밀번호 해싱 및 유효성 검사는 Comment.create 도메인 팩토리에 위임
-        """
         post = await self._get_active_post(post_id)
         board = await self._get_active_board(post.board_info.board_id)
 
@@ -241,12 +238,8 @@ class CommentService:
     async def list_comments(
         self,
         post_id: int,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,
     ) -> list[Comment]:
-        """
-        게시글의 댓글 목록 등록순 조회
-        - comment_list_role 권한 검증
-        """
         post = await self._get_active_post(post_id)
         board = await self._get_active_board(post.board_info.board_id)
 
@@ -261,9 +254,8 @@ class CommentService:
         content: str,
         requester_id: uuid.UUID | None = None,
         guest_password: str | None = None,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,
     ) -> Comment:
- 
         comment = await self._get_active_comment(comment_id)
         post = await self._get_active_post(comment.post_id)
         board = await self._get_active_board(post.board_info.board_id)
@@ -282,9 +274,8 @@ class CommentService:
         comment_id: int,
         requester_id: uuid.UUID | None = None,
         guest_password: str | None = None,
-        user_role: Role = Role.ALL,
+        user_role: Role | None = None,
     ) -> None:
-        
         comment = await self._get_active_comment(comment_id)
         post = await self._get_active_post(comment.post_id)
         board = await self._get_active_board(post.board_info.board_id)
