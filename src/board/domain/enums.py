@@ -20,7 +20,6 @@ class Role(StrEnum):
         if isinstance(required_role, str):
             required_role = Role(required_role)
 
-        logger.info(f"Check:{required_role}")
         return self.level >= required_role.level
 
 # 게시글 검색 타입

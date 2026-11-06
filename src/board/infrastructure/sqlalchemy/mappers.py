@@ -91,15 +91,15 @@ class CommentMapper:
             comment_id=model.comment_id,
             post_id=model.post_id,
             content=model.content,
-            author=Author(author_name=model.author.author_name, author_id=domain.author.author_id),
+            author=Author(author_name=model.author_name, author_id=model.author_id),
             guest_password=(
                 GuestPassword.from_hash(model.guest_password)
                 if model.guest_password
                 else None
             ),
-            created_at=domain.created_at,
-            modified_at=domain.modified_at,
-            deleted_at=domain.deleted_at,
+            created_at=model.created_at,
+            modified_at=model.modified_at,
+            deleted_at=model.deleted_at,
         )
 
     @staticmethod

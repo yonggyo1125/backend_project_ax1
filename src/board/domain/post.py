@@ -310,5 +310,22 @@ class Comment:
         if self.is_deleted:
             raise BadRequestException(message="이미 삭제된 댓글입니다.")
         self.deleted_at = datetime.now(timezone.utc)
+    
+    def can_modify_or_delete(
+        self,
+        requester_id: uuid.UUID | None,
+        user_role: Role,
+        raw_guest_password: str | None,
+        hasher: PasswordHasher,
+    ) -> bool:
+        """수정/삭제 권한 확인 (관리자 -> 회원 본인 -> 비회원 비밀번호 일치 순)"""
+        if user_role == Role.ADMIN:
+            return True
 
+        if not self.author.is_guest:
+            return self.author.is_owner(requester_id)
+
+        if not raw_guest_password:
+            return False
+        return self.verify_guest_password(raw_guest_password, hasher)
 # Entities 정의 E

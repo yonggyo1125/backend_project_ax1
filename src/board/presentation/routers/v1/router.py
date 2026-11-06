@@ -292,7 +292,7 @@ async def write_comment(
         if not req.guest_name or not req.guest_password:
             raise BadRequestException("비회원 댓글 작성 시 작성자 이름과 비밀번호(6자 이상)는 필수입니다.")
         author = (
-            Author.guest(name=req.guest_name)
+            Author.guest(guest_name=req.guest_name)
             if hasattr(Author, "guest")
             else Author(author_id=None, author_name=req.guest_name, is_guest=True)
         )

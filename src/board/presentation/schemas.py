@@ -98,7 +98,6 @@ class PostSearchQuery(BaseModel):
     )
     keyword: str | None = Field(
         default=None,
-        min_length=1,
         max_length=50,
         description="검색 키워드",
     )
