@@ -53,7 +53,7 @@ class PostMapper:
 
         return Post(
             post_id=model.post_id,
-            board_id=model.board_id,
+            board_info=BoardInfo(board_id=model.board_id, board_name=model.board.board_name),
             title=model.title,
             content=model.content,
             author=Author(author_name=model.author_name, author_id=model.author_id),
@@ -71,11 +71,10 @@ class PostMapper:
             title=domain.title,
             content=domain.content,
             author_name=domain.author.author_name,
-            author_id=domain.author.author_name,
-            guest_password=guest_password(
+            author_id=domain.author.author_id,
+            guest_password=(
                 domain.guest_password.hashed_value 
-                if domain.guest_password
-                else None
+                if domain.guest_password else None
             ),
             created_at=domain.created_at,
             modified_at=domain.modified_at,

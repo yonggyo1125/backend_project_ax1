@@ -30,6 +30,9 @@ from board.presentation.schemas import (
     UpdatePostRequest,
 )
 from shared.core.exceptions import BadRequestException
+from shared.core.logger import get_logger
+logger = get_logger(__file__)
+
 
 router = APIRouter(prefix="/v1", tags=["Boards"])
 
@@ -151,7 +154,7 @@ async def write_post(
         if not req.guest_name or not req.guest_password:
             raise BadRequestException("비회원 글 작성 시 작성자 이름과 비밀번호(6자 이상)는 필수입니다.")
         author = (
-            Author.guest(name=req.guest_name)
+            Author.guest(guest_name=req.guest_name)
             if hasattr(Author, "guest")
             else Author(author_id=None, author_name=req.guest_name, is_guest=True)
         )
@@ -179,6 +182,7 @@ async def list_posts(
     current_role: Role | None = Depends(get_current_role),
     post_service: PostService = Depends(provide_post_service),
 ) -> PostPaginationResponse:
+    
     posts, total_count = await post_service.list_posts(
         board_id=board_id,
         user_role=current_role,

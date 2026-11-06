@@ -53,7 +53,10 @@ class PostModel(Base,DateTimeBase):
 
     guest_password: Mapped[str | None] = mapped_column(String(65), nullable=True)
 
-    board: Mapped["BoardModel"] = relationship("BoardModel")
+    board: Mapped["BoardModel"] = relationship(
+        "BoardModel",
+        lazy="joined"
+    )
 
 class CommentModel(Base, DateTimeBase):
     """댓글 테이블"""

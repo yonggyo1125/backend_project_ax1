@@ -27,7 +27,7 @@ from board.infrastructure.sqlalchemy.post_repository import SqlAlchemyPostReposi
 from board.infrastructure.sqlalchemy.comment_repository import SqlAlchemyCommentRepository
 from board.infrastructure.security import BcryptPasswordHasher
 
-from user.presentation.dependencies import get_current_user
+from user.presentation.dependencies import get_optional_user
 
 _password_hasher = BcryptPasswordHasher()
 
@@ -69,12 +69,12 @@ def create_comment_service(
 
 
 # None - 미로그인 사용자
-async def _get_current_role(user=Depends(get_current_user)) -> Role | None:
+async def _get_current_role(user=Depends(get_optional_user)) -> Role | None:
     if not user:
         return None
     return Role(user.role)
     
-async def _get_current_author(user=Depends(get_current_user)) -> Author | None:
+async def _get_current_author(user=Depends(get_optional_user)) -> Author | None:
     if not user:
         return None
 
