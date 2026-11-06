@@ -19,13 +19,16 @@ class UserService:
             )
 
         # 엔티티 생성 (형식/길이/비밀번호 규칙 검증 수행)
-        user = User.create(
-            email=email,
-            name=name,
-            raw_password=password,
-            hasher=self.hasher,
-        )
-        return await self.repository.save(user)
+        try:
+            user = User.create(
+                email=email,
+                name=name,
+                raw_password=password,
+                hasher=self.hasher,
+            )
+            return await self.repository.save(user)
+        except Exception as err:
+            raise ConflictException() from err 
 
     async def change_password(
         self,

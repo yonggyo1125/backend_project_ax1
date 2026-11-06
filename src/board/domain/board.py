@@ -4,6 +4,9 @@ from datetime import datetime, timezone
 
 from board.domain.enums import Role
 from shared.core.exceptions import ValidationException, BadRequestException
+from shared.core.logger import get_logger
+
+logger = get_logger(__file__)
 
 """
 1. 게시판은 무한대로 생성 가능하다. 게시판 설정 하나가 게시판 하나가 된다.
@@ -48,9 +51,13 @@ class Authority:
     def can_edit_comments(self, user_role: Role | str) -> bool:
         return self._check(user_role, self.comment_edit_role)
 
-    def _check(self, user_role: Role | str, required: Role) -> bool:
+    def _check(self, user_role: Role | str | None, required: Role) -> bool:
+        if user_role is None:
+            return required == Role.ALL
+
         if isinstance(user_role, str):
             user_role = Role(user_role)
+            
         return user_role.satisfies(required)
     
 
